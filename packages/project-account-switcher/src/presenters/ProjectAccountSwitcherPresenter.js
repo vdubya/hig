@@ -10,43 +10,86 @@ import "./ProjectAccountSwitcherPresenter.scss";
 
 export default class ProjectAccountSwitcherPresenter extends Component {
   static propTypes = {
-    activeLabel: PropTypes.string,
     /** Heading title for the list of Accounts */
     accountTitle: PropTypes.string,
     /** List of Accounts */
     accounts: PropTypes.arrayOf(
       PropTypes.shape({
+        id: PropTypes.string,
+        image: PropTypes.string,
         label: PropTypes.string
       })
     ),
+    activeAccountId: PropTypes.string,
+    activeLabel: PropTypes.string,
+    activeProjectId: PropTypes.string,
+    onAccountClick: PropTypes.func,
+    onProjectClick: PropTypes.func,
     /** Menu heading title for the list of Projects */
     projectTitle: PropTypes.string,
     /** List of Projects */
     projects: PropTypes.arrayOf(
       PropTypes.shape({
+        id: PropTypes.string,
+        image: PropTypes.string,
         label: PropTypes.string
       })
     )
   };
 
   static defaultProps = {
-    activeLabel: "I am a label",
     accountTitle: "Accounts",
-    accounts: [{ label: "Account 1" }, { label: "Account 2" }],
+    accounts: [
+      { id: "1", label: "Account 1" },
+      { id: "2", label: "Account 2" }
+    ],
+    activeAccountId: "2",
+    activeProjectId: "2",
     projectTitle: "Projects",
-    projects: [{ label: "Project 1" }, { label: "Project 2" }]
+    projects: [{ id: "1", label: "Project 1" }, { id: "2", label: "Project 2" }]
   };
 
   constructPlaceholder(label) {
     return label.match(/\b(\w)/g).join("");
   }
 
+  constructLabel() {
+    const activeAccount = this.props.accounts.filter(
+      account => account.id === this.props.activeAccountId
+    )[0];
+    const activeProject = this.props.projects.filter(
+      project => project.id === this.props.activeProjectId
+    )[0];
+    return activeAccount.label + " / " + activeProject.label;
+  }
+
+  constructLabelPlaceholder() {
+    const activeAccount = this.props.accounts.filter(
+      account => account.id === this.props.activeAccountId
+    )[0];
+    const activeProject = this.props.projects.filter(
+      project => project.id === this.props.activeProjectId
+    )[0];
+    return (
+      this.constructPlaceholder(activeAccount.label) +
+      "/" +
+      this.constructPlaceholder(activeProject.label)
+    );
+  }
+
   accountsList() {
     return this.props.accounts.map(account => (
-      <div className="hig__global-nav__top-nav__project-account-switcher__item hig__global-nav__top-nav__project-account-switcher__item--account hig__global-nav__top-nav__project-account-switcher__item--active">
+      <div
+        className="hig__global-nav__top-nav__project-account-switcher__item
+                      hig__global-nav__top-nav__project-account-switcher__item--account
+                      hig__global-nav__top-nav__project-account-switcher__item--active"
+        data-account-id={account.id}
+        onClick={this.props.onAccountClick}
+      >
         <span className="hig__global-nav__top-nav__project-account-switcher__item__image-wrapper">
           <span
             className="hig__global-nav__top-nav__project-account-switcher__item__image-placeholder"
+            data-account-id={account.id}
             dangerouslySetInnerHTML={{
               __html: this.constructPlaceholder(account.label)
             }}
@@ -54,6 +97,7 @@ export default class ProjectAccountSwitcherPresenter extends Component {
         </span>
         <span
           className="hig__global-nav__top-nav__project-account-switcher__item__label"
+          data-account-id={account.id}
           dangerouslySetInnerHTML={{ __html: account.label }}
         />
       </div>
@@ -62,10 +106,17 @@ export default class ProjectAccountSwitcherPresenter extends Component {
 
   projectsList() {
     return this.props.projects.map(project => (
-      <div className="hig__global-nav__top-nav__project-account-switcher__item hig__global-nav__top-nav__project-account-switcher__item--project hig__global-nav__top-nav__project-account-switcher__item--active">
+      <div
+        className="hig__global-nav__top-nav__project-account-switcher__item
+                      hig__global-nav__top-nav__project-account-switcher__item--project
+                      hig__global-nav__top-nav__project-account-switcher__item--active"
+        data-project-id={project.id}
+        onClick={this.props.onProjectClick}
+      >
         <span className="hig__global-nav__top-nav__project-account-switcher__item__image-wrapper">
           <span
             className="hig__global-nav__top-nav__project-account-switcher__item__image-placeholder"
+            data-project-id={project.id}
             dangerouslySetInnerHTML={{
               __html: this.constructPlaceholder(project.label)
             }}
@@ -73,6 +124,7 @@ export default class ProjectAccountSwitcherPresenter extends Component {
         </span>
         <span
           className="hig__global-nav__top-nav__project-account-switcher__item__label"
+          data-project-id={project.id}
           dangerouslySetInnerHTML={{ __html: project.label }}
         />
       </div>
@@ -100,10 +152,6 @@ export default class ProjectAccountSwitcherPresenter extends Component {
     );
   }
 
-  constructLabel() {
-    return "Account 1 / Project 1 ";
-  }
-
   render() {
     return (
       <Flyout
@@ -116,7 +164,9 @@ export default class ProjectAccountSwitcherPresenter extends Component {
               <img className="hig__global-nav__top-nav__project-account-switcher__item__image" />
               <span
                 className="hig__global-nav__top-nav__project-account-switcher__item__image-placeholder"
-                dangerouslySetInnerHTML={{ __html: "A1/P1" }}
+                dangerouslySetInnerHTML={{
+                  __html: this.constructLabelPlaceholder()
+                }}
               />
             </span>
             <span
