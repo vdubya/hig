@@ -1,6 +1,4 @@
-import { Modal } from "hig-react";
-import "./modal.scss";
-import { Component } from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
 
 import ModalPresenter from "./presenters/ModalPresenter";
@@ -25,13 +23,9 @@ export default class Modal extends Component {
      */
     open: PropTypes.bool,
     /**
-     * Modal is visible when true
-     */
-    defaultOpen: propTypes.bool,
-    /**
      * Style of the modal shell
      */
-    style: PropTypes.oneOf(VanillaModal.AvailableStyles),
+    style: PropTypes.string,
     /**
      * Title of the modal
      */
@@ -44,7 +38,6 @@ export default class Modal extends Component {
     return (
       <ModalBehavior
         open={open}
-        defaultOpen={defaultOpen}
         onCloseClick={onCloseClick}
         onOverlayClick={onOverlayClick}
       >
