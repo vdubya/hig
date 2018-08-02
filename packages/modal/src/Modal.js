@@ -33,7 +33,14 @@ export default class Modal extends Component {
   };
 
   render() {
-    const { children, open, onCloseClick, onOverlayClick, title } = this.props;
+    const {
+      children,
+      open,
+      onCloseClick,
+      onOverlayClick,
+      style,
+      title
+    } = this.props;
 
     return (
       <ModalBehavior
@@ -41,14 +48,21 @@ export default class Modal extends Component {
         onCloseClick={onCloseClick}
         onOverlayClick={onOverlayClick}
       >
-        {({ open, handleCloseClick, handleOverlayClick }) => (
+        {({
+          open,
+          handleCloseClick,
+          handleOverlayClick,
+          handleWindowClick
+        }) => (
           <ModalPresenter
             open={open}
             title={title}
+            style={style}
             onCloseClick={handleCloseClick}
             onOverlayClick={handleOverlayClick}
+            onWindowClick={handleWindowClick}
           >
-            {this.props.children}
+            {children}
           </ModalPresenter>
         )}
       </ModalBehavior>

@@ -35,11 +35,19 @@ export default class ModalBehavior extends Component {
     }
   };
 
+  /**
+   * @param {MouseEvent} event
+   */
+  handleWindowClick = event => {
+    event.stopPropagation();
+  };
+
   render() {
     return this.props.children({
       open: this.props.open,
       handleCloseClick: this.handleCloseClick,
-      handleOverlayClick: this.handleOverlayClick
+      handleOverlayClick: this.handleOverlayClick,
+      handleWindowClick: this.handleWindowClick
     });
   }
 }

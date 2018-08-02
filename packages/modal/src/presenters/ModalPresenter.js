@@ -1,7 +1,10 @@
 import React, { Component } from "react";
+import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
+import IconButton from "@hig/icon-button";
 
 import "./ModalPresenter.scss";
+import cx from "classnames";
 
 export default class ModalPresenter extends Component {
   static propTypes = {
@@ -10,13 +13,17 @@ export default class ModalPresenter extends Component {
      */
     children: PropTypes.node,
     /**
-     * Triggers when you click the close button
+     * Triggers when one clicks the close button
      */
     onCloseClick: PropTypes.func,
     /**
-     * Triggers when you click the overlay behind the modal
+     * Triggers when one clicks the overlay behind the modal
      */
     onOverlayClick: PropTypes.func,
+    /**
+     * Triggers when one clicks the modal window
+     */
+    onWindowclick: PropTypes.func,
     /**
      * Modal is visible when true
      */
@@ -31,32 +38,59 @@ export default class ModalPresenter extends Component {
     title: PropTypes.string
   };
 
+  setScrolling = element => {
+    this.hasScrolling = element.scrollHeight > element.clientHeight;
+  };
+
+  componentDidMount() {
+    console.log(this.hasScrolling);
+  }
+
   render() {
-    return this.props.open ? (
-      <div className="hig__modal-V1">
+    const style = this.props.style || "standard";
+
+    const windowClasses = cx([
+      "hig__modal-V1__window",
+      `hig__modal-V1__window--${style}`
+    ]);
+
+    const wrapperClasses = cx([
+      "hig__modal-V1",
+      {
+        "hig__modal-V1--open": this.props.open
+      }
+    ]);
+
+    return (
+      <div className={wrapperClasses}>
         <div
           className="hig__modal-V1__overlay"
-          onClick={() => this.props.onOverlayClick()}
+          onClick={event => this.props.onOverlayClick(event)}
         >
-          <article className="hig__modal-V1__window{{#style}} hig__modal-V1__window--{{style}}{{/style}}">
+          <article
+            onClick={event => this.props.onWindowClick(event)}
+            className={windowClasses}
+          >
             <header className="hig__modal-V1__header">
-              <button
-                onClick={() => this.props.onCloseClick()}
-                type="button"
+              <IconButton
+                onClick={event => this.props.onCloseClick(event)}
                 aria-label="close"
-                className="hig__modal-V1__close-button"
+                name="x-close-gray"
+                title="Close"
               />
               <span className="hig__modal-V1__header-title">
                 {this.props.title}
               </span>
             </header>
             <div className="hig__modal-V1__body">
-              <div className="hig__modal-V1__slot">{this.props.children}</div>
+              <div className="hig__modal-V1__slot" ref={this.setScrolling}>
+                {this.props.children}
+              </div>
             </div>
             <div className="hig__modal__actions" />
           </article>
         </div>
       </div>
-    ) : null;
+    );
   }
 }
